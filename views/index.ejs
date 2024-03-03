@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>TASK MANAGER</title>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <center>
+        <h2>Task Manager</h2>
+      </center>
+      <hr />
+      <div class="row">
+        <div class="pt-2 col-lg-8">
+          <h2>Task Cycle</h2>
+          <br />
+          <!-- Nav tabs -->
+          <ul class="nav nav-tabs col-lg-12">
+            <li class="nav-item col-lg-3">
+              <a class="nav-link active" data-toggle="tab" href="#total">
+                <div class="card bg-info text-white">
+                  <div class="card-header">
+                    <center>Total</center>
+                  </div>
+                  <div class="card-body">
+                    <% if(tasks.length> 0) {%>
+                    <center>
+                      <h1><%= tasks.length %></h1>
+                    </center>
+                    <%} else{%>
+                    <center>
+                      <h1>0</h1>
+                    </center>
+                    <%}%>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item col-lg-3">
+              <a class="nav-link" data-toggle="tab" href="#pending">
+                <div class="card bg-danger text-white">
+                  <div class="card-header">
+                    <center>Pending</center>
+                  </div>
+                  <div class="card-body">
+                    <%var i=0%> <% for (task of tasks){
+                    if(task.status=='pending' ){ i++ } } if(i>0){%>
+                    <center>
+                      <h1><%= i %></h1>
+                    </center>
+                    <%}else{%>
+                    <center>
+                      <h1>0</h1>
+                    </center>
+                    <%}%>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item col-lg-3">
+              <a class="nav-link" data-toggle="tab" href="#running">
+                <div class="card bg-warning text-white">
+                  <div class="card-header">
+                    <center>Running</center>
+                  </div>
+                  <div class="card-body">
+                    <%var i=0%> <% for (task of tasks){
+                    if(task.status=='ongoing' ){ i++ } } if(i>0){%>
+                    <center>
+                      <h1><%= i %></h1>
+                    </center>
+                    <%}else{%>
+                    <center>
+                      <h1>0</h1>
+                    </center>
+                    <%}%>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item col-lg-3">
+              <a class="nav-link" data-toggle="tab" href="#complete">
+                <div class="card bg-success text-white">
+                  <div class="card-header">
+                    <center>Completed</center>
+                  </div>
+                  <div class="card-body">
+                    <%var i=0%> <% for (task of tasks){
+                    if(task.status=='complete' ){ i++ } } if(i>0){%>
+                    <center>
+                      <h1><%= i %></h1>
+                    </center>
+                    <%}else{%>
+                    <center>
+                      <h1>0</h1>
+                    </center>
+                    <%}%>
+                  </div>
+                </div>
+              </a>
+            </li>
+          </ul>
+          <hr />
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div id="total" class="container tab-pane active">
+              <br />
+              <h3>Total Tasks</h3>
+              <div
+                class="row"
+                style="width: 100%; max-height: 550px; overflow: scroll"
+              >
+                <%for (task of tasks) {%>
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                        "
+                      >
+                        <h5><%= task.title %></h5>
+                        <small> <%= task.createdAt.toDateString() %> </small>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <p><%= task.description %></p>
+                      <%if(task.status=='pending' ){%>
+                      <span class="badge badge-danger">Pending Task</span>
+                      <hr />
+                      <form
+                        action="/<%= task._id %>?_method=patch"
+                        method="post"
+                      >
+                        <button type="submit" class="btn btn-link">
+                          Start Task
+                        </button>
+                      </form>
+                      <%} else if(task.status=='ongoing' ){%>
+                      <span class="badge badge-warning">Running Task</span>
+                      <hr />
+                      <form
+                        action="/complete/<%= task._id %>?_method=patch"
+                        method="post"
+                      >
+                        <button type="submit" class="btn btn-link">
+                          Complete Task
+                        </button>
+                      </form>
+                      <%}else if(task.status=='complete' ){%>
+                      <span class="badge badge-success">Task Completed</span>
+                      <%}%>
+                    </div>
+                  </div>
+                  <br />
+                </div>
+
+                <%}%>
+              </div>
+            </div>
+            <div id="pending" class="container tab-pane fade">
+              <br />
+              <h3>Pending Tasks</h3>
+              <div
+                class="row"
+                style="width: 100%; max-height: 550px; overflow: scroll"
+              >
+                <% var i=0; for (task of tasks){ if(task.status=='pending' ){
+                i++ } } if(i>0){ for (task of tasks){ if(task.status ==
+                'pending'){ %>
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                        "
+                      >
+                        <h5><%= task.title %></h5>
+                        <small> <%= task.createdAt.toDateString() %> </small>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <p><%= task.description %></p>
+                      <hr />
+                      <form
+                        action="/<%= task._id %>?_method=patch"
+                        method="post"
+                      >
+                        <button type="submit" class="btn btn-link">
+                          Start Task
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  <br />
+                </div>
+                <% } } } else{ %>
+                <div class="col-lg-12">
+                  <center>
+                    <h2 class="pt-5">you do not have any pending tasks</h2>
+                  </center>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <div id="running" class="container tab-pane fade">
+              <br />
+              <h3>Running Tasks</h3>
+              <div
+                class="row"
+                style="width: 100%; max-height: 550px; overflow: scroll"
+              >
+                <% var i=0; for (task of tasks){ if(task.status=='ongoing' ){
+                i++ } } if(i>0){ for (task of tasks){ if(task.status ==
+                'ongoing'){ %>
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                        "
+                      >
+                        <h5><%= task.title %></h5>
+                        <small> <%= task.createdAt.toDateString() %> </small>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <p><%= task.description %></p>
+                      <hr />
+                      <form
+                        action="/complete/<%= task._id %>?_method=patch"
+                        method="post"
+                      >
+                        <button type="submit" class="btn btn-link">
+                          Complete Task
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  <br />
+                </div>
+                <% } } } else{ %>
+                <div class="col-lg-12">
+                  <center>
+                    <h2 class="pt-5">you do not have any Ongoing tasks</h2>
+                  </center>
+                </div>
+                <% } %>
+              </div>
+            </div>
+            <div id="complete" class="container tab-pane fade">
+              <br />
+              <h3>Completed Tasks</h3>
+              <div
+                class="row"
+                style="width: 100%; max-height: 550px; overflow: scroll"
+              >
+                <% var i=0; for (task of tasks){ if(task.status=='complete' ){
+                i++ } } if(i>0){ for (task of tasks){ if(task.status ==
+                'complete'){ %>
+                <div class="col-lg-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: space-between;
+                        "
+                      >
+                        <h5><%= task.title %></h5>
+                        <small> <%= task.createdAt.toDateString() %> </small>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <p><%= task.description %></p>
+                    </div>
+                  </div>
+                  <br />
+                </div>
+                <% } } } else{ %>
+                <div class="col-lg-12">
+                  <center>
+                    <h2 class="pt-5">You did not completed any tasks yet</h2>
+                  </center>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <center>
+            <h3>Add New Task</h3>
+          </center>
+          <div class="col-lg-12">
+            <form action="/" method="post">
+              <div class="form-group">
+                <label for="title">Task Title:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  name="title"
+                  placeholder="Task title"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="description">Comment:</label>
+                <textarea
+                  class="form-control"
+                  rows="5"
+                  id="description"
+                  name="description"
+                  placeholder="Task Details"
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-outline-success" type="submit">
+                  Add Task
+                </button>
+              </div>
+            </form>
+          </div>
+          <hr />
+          <div
+            class="col-lg-12"
+            style="display: flex; flex-direction: column; align-items: center"
+          >
+            <img src="/image/pro.png" alt="pro" width="150" height="150" />
+            <h5>Mr. John Doe</h5>
+            <small>johndoe@email.com | 01234567890</small>
+            <br />
+            <button class="btn btn-outline-danger" sty>Logout</button>
+          </div>
+          <br /><br /><br /><br />
+          <div class="col-lg-12" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+            <p>
+              This is a simple Task Manager or a ToDo application. Task can be
+              added. Task status changes according to the actions. This app
+              could be developed with many other features. Will do it near
+              future.
+            </p>
+            <small style="color:brown">It was actually a fun project.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
